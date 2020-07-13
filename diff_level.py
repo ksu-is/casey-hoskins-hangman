@@ -24,6 +24,7 @@ buttons = []
 guessed = []
 hangmanPics = [pygame.image.load('hangman0.png'), pygame.image.load('hangman1.png'), pygame.image.load('hangman2.png'), pygame.image.load('hangman3.png'), pygame.image.load('hangman4.png'), pygame.image.load('hangman5.png'), pygame.image.load('hangman6.png')]
 limbs = 0
+hint = False
 
 
 def redraw_game_window():
@@ -51,15 +52,23 @@ def redraw_game_window():
     win.blit(pic, (winWidth/2 - pic.get_width()/2 + 20, 150))
 
 
-    hint_text = difficulty_font.render("Hint", 1, BLACK)
-    win.blit(hint_text, (winWidth/2 - hint_text.get_width()/2, 470))
-    pygame.draw.circle(win, BLACK, (305,493), 10, 0)
+    if hint == True:
+        hint_text = difficulty_font.render("Hint", 1, BLACK)
+        win.blit(hint_text, (winWidth/2 - hint_text.get_width()/2, 470))
+        pygame.draw.circle(win, RED, (305,493), 10, 0)
+        give_hint = difficulty_font.render(hint_str, 1, BLACK)
+        win.blit(give_hint, (winWidth/2 - give_hint.get_width()/2, 520))
+    else:
+        hint_text = difficulty_font.render("Hint", 1, BLACK)
+        win.blit(hint_text, (winWidth/2 - hint_text.get_width()/2, 470))
+        pygame.draw.circle(win, BLACK, (305,493), 10, 0)
 
     pygame.display.update()
 
 
 def randomWord(difficulty_level):
     global word
+    global hint_str
     if difficulty_level == "Easy":
         file = open('words-easy.txt')
         f = file.readlines()
@@ -70,13 +79,16 @@ def randomWord(difficulty_level):
         file = open('words-medium.txt')
         f = file.readlines()
         i = random.randrange(0, len(f) - 1)
+        file = open('words-medium-hint.txt')
+        h = file.readlines()
     else:
         file = open('words-hard.txt')
         f = file.readlines()
         i = random.randrange(0, len(f) - 1)
-
+        file = open('words-hard-hint.txt')
+        h = file.readlines()
+    hint_str = h[i][:-1]
     return f[i][:-1]
-    return h[i][:-1]
 
 
 def hang(guess):
@@ -206,12 +218,14 @@ def reset():
     global guessed
     global buttons
     global word
+    global hint
     for i in range(len(buttons)):
         buttons[i][4] = True
 
     limbs = 0
     guessed = []
     difficulty_level = ""
+    hint = False
 
     difficulty()
 
@@ -241,7 +255,6 @@ inPlay = True
 while inPlay:
     redraw_game_window()
     pygame.time.delay(10)
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             inPlay = False
@@ -249,6 +262,11 @@ while inPlay:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 inPlay = False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            m_x, m_y = pygame.mouse.get_pos()
+            hint_check = math.sqrt((305 - m_x)**2 + (493 - m_y)**2)
+            if hint_check < 10:
+                hint = True
         if event.type == pygame.MOUSEBUTTONDOWN:
             clickPos = pygame.mouse.get_pos()
             letter = buttonHit(clickPos[0], clickPos[1])

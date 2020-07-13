@@ -1,18 +1,12 @@
-#########################################################
-## File Name: hangman.py                               ##
-## Description: Starter for Hangman project - ICS3U    ##
-#########################################################
 import pygame
 import random
 import math
 
 pygame.init()
-winHeight = 480
+winHeight = 680
 winWidth = 700
 win=pygame.display.set_mode((winWidth,winHeight))
-#---------------------------------------#
-# initialize global variables/constants #
-#---------------------------------------#
+
 BLACK = (0,0, 0)
 WHITE = (255,255,255)
 RED = (255,0, 0)
@@ -30,6 +24,7 @@ buttons = []
 guessed = []
 hangmanPics = [pygame.image.load('hangman0.png'), pygame.image.load('hangman1.png'), pygame.image.load('hangman2.png'), pygame.image.load('hangman3.png'), pygame.image.load('hangman4.png'), pygame.image.load('hangman5.png'), pygame.image.load('hangman6.png')]
 limbs = 0
+hint = False
 
 
 def redraw_game_window():
@@ -55,24 +50,44 @@ def redraw_game_window():
 
     pic = hangmanPics[limbs]
     win.blit(pic, (winWidth/2 - pic.get_width()/2 + 20, 150))
+
+
+    if hint == True:
+        hint_text = difficulty_font.render("Hint", 1, BLACK)
+        win.blit(hint_text, (winWidth/2 - hint_text.get_width()/2, 470))
+        pygame.draw.circle(win, RED, (305,493), 10, 0)
+        give_hint = difficulty_font.render(hint_str, 1, BLACK)
+        win.blit(give_hint, (winWidth/2 - give_hint.get_width()/2, 520))
+    else:
+        hint_text = difficulty_font.render("Hint", 1, BLACK)
+        win.blit(hint_text, (winWidth/2 - hint_text.get_width()/2, 470))
+        pygame.draw.circle(win, BLACK, (305,493), 10, 0)
+
     pygame.display.update()
 
 
 def randomWord(difficulty_level):
     global word
+    global hint_str
     if difficulty_level == "Easy":
         file = open('words-easy.txt')
         f = file.readlines()
         i = random.randrange(0, len(f) - 1)
+        file = open('words_easy_hint.txt')
+        h = file.readlines()
     elif difficulty_level == "Medium":
         file = open('words-medium.txt')
         f = file.readlines()
         i = random.randrange(0, len(f) - 1)
+        file = open('words-medium-hint.txt')
+        h = file.readlines()
     else:
         file = open('words-hard.txt')
         f = file.readlines()
         i = random.randrange(0, len(f) - 1)
-
+        file = open('words-hard-hint.txt')
+        h = file.readlines()
+    hint_str = h[i][:-1]
     return f[i][:-1]
 
 
@@ -110,16 +125,17 @@ def buttonHit(x, y):
 def difficulty():
     win.fill(GREEN)
     global difficulty_level
+    global word
 
     choose_difficulty = difficulty_font.render("Choose a difficulty level:",1, BLACK)
-    diffuclty_text_easy = difficulty_font.render("Easy", 1, BLACK)
-    diffuclty_text_medium = difficulty_font.render("Medium", 1, BLACK)
-    diffuclty_text_hard = difficulty_font.render("Hard", 1, BLACK)
+    difficulty_text_easy = difficulty_font.render("Easy", 1, BLACK)
+    difficulty_text_medium = difficulty_font.render("Medium", 1, BLACK)
+    difficulty_text_hard = difficulty_font.render("Hard", 1, BLACK)
 
     win.blit(choose_difficulty, (winWidth/2 - choose_difficulty.get_width()/2, 95))
-    win.blit(diffuclty_text_easy, (winWidth/2 - diffuclty_text_easy.get_width()/2, 170))
-    win.blit(diffuclty_text_medium, (winWidth/2 - diffuclty_text_medium.get_width()/2, 220))
-    win.blit(diffuclty_text_hard, (winWidth/2 - diffuclty_text_hard.get_width()/2, 270))
+    win.blit(difficulty_text_easy, (winWidth/2 - difficulty_text_easy.get_width()/2, 170))
+    win.blit(difficulty_text_medium, (winWidth/2 - difficulty_text_medium.get_width()/2, 220))
+    win.blit(difficulty_text_hard, (winWidth/2 - difficulty_text_hard.get_width()/2, 270))
 
     pygame.draw.circle(win, BLACK, (302,195), 10, 0)
     pygame.draw.circle(win, BLACK, (280,245), 10, 0)
@@ -145,6 +161,8 @@ def difficulty():
                     pygame.display.update()
                     pygame.time.delay(1000)
                     difficulty_level = "Easy"
+                    word = randomWord(difficulty_level)
+                    keepPlaying = False
                 elif medium_check < 10:
                     pygame.draw.circle(win, BLACK, (302,195), 10, 0)
                     pygame.draw.circle(win, RED, (280,245), 10, 0)
@@ -152,7 +170,8 @@ def difficulty():
                     pygame.display.update()
                     pygame.time.delay(1000)
                     difficulty_level = "Medium"
-                    break
+                    word = randomWord(difficulty_level)
+                    keepPlaying = False
                 elif hard_check < 10:
                     pygame.draw.circle(win, BLACK, (302,195), 10, 0)
                     pygame.draw.circle(win, BLACK, (280,245), 10, 0)
@@ -160,7 +179,8 @@ def difficulty():
                     pygame.display.update()
                     pygame.time.delay(1000)
                     difficulty_level = "Hard"
-                    break
+                    word = randomWord(difficulty_level)
+                    keepPlaying = False
 
 
 def end(winner=False):
@@ -198,12 +218,14 @@ def reset():
     global guessed
     global buttons
     global word
+    global hint
     for i in range(len(buttons)):
         buttons[i][4] = True
 
     limbs = 0
     guessed = []
-    word = randomWord(difficulty_level)
+    difficulty_level = ""
+    hint = False
 
     difficulty()
 
@@ -211,6 +233,10 @@ def reset():
 
 
 # Setup buttons
+
+def quit_game():
+    pygame.quit()
+
 difficulty()
 
 increase = round(winWidth / 13)
@@ -224,13 +250,11 @@ for i in range(26):
     buttons.append([LIGHT_BLUE, x, y, 20, True, 65 + i])
     # buttons.append([color, x_pos, y_pos, radius, visible, char])
 
-word = randomWord(difficulty_level)
 inPlay = True
 
 while inPlay:
     redraw_game_window()
     pygame.time.delay(10)
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             inPlay = False
@@ -238,6 +262,11 @@ while inPlay:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 inPlay = False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            m_x, m_y = pygame.mouse.get_pos()
+            hint_check = math.sqrt((305 - m_x)**2 + (493 - m_y)**2)
+            if hint_check < 10:
+                hint = True
         if event.type == pygame.MOUSEBUTTONDOWN:
             clickPos = pygame.mouse.get_pos()
             letter = buttonHit(clickPos[0], clickPos[1])
@@ -253,7 +282,5 @@ while inPlay:
                     print(spacedOut(word, guessed))
                     if spacedOut(word, guessed).count('_') == 0:
                         end(True)
-def quit_game():
-    pygame.quit()
 
 # always quit pygame when done!
