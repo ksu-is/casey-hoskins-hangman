@@ -3,19 +3,19 @@ import random
 import math
 
 pygame.init()
-winHeight = 680
+winHeight = 650
 winWidth = 700
 win=pygame.display.set_mode((winWidth,winHeight))
 
-BLACK = (0,0, 0)
+BLACK = (0,0,0)
 WHITE = (255,255,255)
 RED = (255,0, 0)
-GREEN = (0,255,0)
+GREY = (224,224,224)
 BLUE = (0,0,255)
-LIGHT_BLUE = (102,255,255)
-RED = (200,0,0)
+DARK_GREY = (128,128,128)
+GREEN = (0,255,0)
 
-btn_font = pygame.font.SysFont("arial", 20)
+btn_font = pygame.font.SysFont("comicsansms", 20)
 guess_font = pygame.font.SysFont("monospace", 24)
 lost_font = pygame.font.SysFont('arial', 45)
 difficulty_font = pygame.font.SysFont('comicsansms', 32)
@@ -31,7 +31,7 @@ def redraw_game_window():
     global guessed
     global hangmanPics
     global limbs
-    win.fill(GREEN)
+    win.fill(GREY)
     # Buttons
     for i in range(len(buttons)):
         if buttons[i][4]:
@@ -55,7 +55,7 @@ def redraw_game_window():
     if hint == True:
         hint_text = difficulty_font.render("Hint", 1, BLACK)
         win.blit(hint_text, (winWidth/2 - hint_text.get_width()/2, 470))
-        pygame.draw.circle(win, RED, (305,493), 10, 0)
+        pygame.draw.circle(win, GREEN, (305,493), 10, 0)
         give_hint = difficulty_font.render(hint_str, 1, BLACK)
         win.blit(give_hint, (winWidth/2 - give_hint.get_width()/2, 520))
     else:
@@ -123,7 +123,7 @@ def buttonHit(x, y):
 
 
 def difficulty():
-    win.fill(GREEN)
+    win.fill(GREY)
     global difficulty_level
     global word
 
@@ -155,7 +155,7 @@ def difficulty():
                 medium_check = math.sqrt((280 - m_x)**2 + (245 - m_y)**2)
                 hard_check = math.sqrt((300 - m_x)**2 + (295 - m_y)**2)
                 if easy_check < 10:
-                    pygame.draw.circle(win, RED, (302,195), 10, 0)
+                    pygame.draw.circle(win, GREEN, (302,195), 10, 0)
                     pygame.draw.circle(win, BLACK, (280,245), 10, 0)
                     pygame.draw.circle(win, BLACK, (300,295), 10, 0)
                     pygame.display.update()
@@ -165,7 +165,7 @@ def difficulty():
                     keepPlaying = False
                 elif medium_check < 10:
                     pygame.draw.circle(win, BLACK, (302,195), 10, 0)
-                    pygame.draw.circle(win, RED, (280,245), 10, 0)
+                    pygame.draw.circle(win, GREEN, (280,245), 10, 0)
                     pygame.draw.circle(win, BLACK, (300,295), 10, 0)
                     pygame.display.update()
                     pygame.time.delay(1000)
@@ -175,7 +175,7 @@ def difficulty():
                 elif hard_check < 10:
                     pygame.draw.circle(win, BLACK, (302,195), 10, 0)
                     pygame.draw.circle(win, BLACK, (280,245), 10, 0)
-                    pygame.draw.circle(win, RED, (300,295), 10, 0)
+                    pygame.draw.circle(win, GREEN, (300,295), 10, 0)
                     pygame.display.update()
                     pygame.time.delay(1000)
                     difficulty_level = "Hard"
@@ -189,7 +189,7 @@ def end(winner=False):
     winTxt = 'WINNER!, press any key to play again...'
     redraw_game_window()
     pygame.time.delay(1000)
-    win.fill(GREEN)
+    win.fill(GREY)
 
     if winner == True:
         label = lost_font.render(winTxt, 1, BLACK)
@@ -247,7 +247,7 @@ for i in range(26):
     else:
         x = 25 + (increase * (i - 13))
         y = 85
-    buttons.append([LIGHT_BLUE, x, y, 20, True, 65 + i])
+    buttons.append([DARK_GREY, x, y, 20, True, 65 + i])
     # buttons.append([color, x_pos, y_pos, radius, visible, char])
 
 inPlay = True
