@@ -34,6 +34,7 @@ hangmanPics = [pygame.image.load('hangman0.png'), pygame.image.load('hangman1.pn
 limbs = 0
 hint = False
 word_count = 1
+score = 0
 
 
 
@@ -42,6 +43,8 @@ def redraw_game_window():
     global guessed
     global hangmanPics
     global limbs
+    global difficulty_level
+    global score
     win.fill(GREY)
     # Buttons
     for i in range(len(buttons)):
@@ -62,17 +65,22 @@ def redraw_game_window():
     pic = hangmanPics[limbs]
     win.blit(pic, (winWidth/2 - pic.get_width()/2 + 20, 150))
 
-
-    if hint == True:
-        hint_text = difficulty_font.render("Hint", 1, BLACK)
-        win.blit(hint_text, (winWidth/2 - hint_text.get_width()/2, 470))
-        pygame.draw.circle(win, GREEN, (305,493), 10, 0)
-        give_hint = difficulty_font.render(hint_str, 1, BLACK)
-        win.blit(give_hint, (winWidth/2 - give_hint.get_width()/2, 520))
+    if difficulty_level != "unending":
+        if hint == True:
+            hint_text = difficulty_font.render("Hint", 1, BLACK)
+            win.blit(hint_text, (winWidth/2 - hint_text.get_width()/2, 470))
+            pygame.draw.circle(win, GREEN, (305,493), 10, 0)
+            give_hint = difficulty_font.render(hint_str, 1, BLACK)
+            win.blit(give_hint, (winWidth/2 - give_hint.get_width()/2, 520))
+        else:
+            hint_text = difficulty_font.render("Hint", 1, BLACK)
+            win.blit(hint_text, (winWidth/2 - hint_text.get_width()/2, 470))
+            pygame.draw.circle(win, BLACK, (305,493), 10, 0)
     else:
-        hint_text = difficulty_font.render("Hint", 1, BLACK)
-        win.blit(hint_text, (winWidth/2 - hint_text.get_width()/2, 470))
-        pygame.draw.circle(win, BLACK, (305,493), 10, 0)
+        score_text = difficulty_font.render("Score:",1, BLACK)
+        win.blit(score_text, (500, 600))
+        score_text = difficulty_font.render(str(score),1, BLACK)
+        win.blit(score_text, (610, 600))
 
     pygame.display.update()
 
@@ -130,6 +138,7 @@ def hang(guess):
 
 
 def spacedOut(word, guessed=[]):
+    global score
     spacedWord = ''
     guessedLetters = guessed
     for x in range(len(word)):
@@ -172,7 +181,7 @@ def difficulty():
     pygame.draw.circle(win, BLACK, (302,195), 10, 0)
     pygame.draw.circle(win, BLACK, (280,245), 10, 0)
     pygame.draw.circle(win, BLACK, (300,295), 10, 0)
-    pygame.draw.circle(win, BLACK, (270,335), 10, 0)
+    pygame.draw.circle(win, BLACK, (267,335), 10, 0)
 
     pygame.display.update()
 
@@ -193,7 +202,7 @@ def difficulty():
                     pygame.draw.circle(win, GREEN, (302,195), 10, 0)
                     pygame.draw.circle(win, BLACK, (280,245), 10, 0)
                     pygame.draw.circle(win, BLACK, (300,295), 10, 0)
-                    pygame.draw.circle(win, BLACK, (270,335), 10, 0)
+                    pygame.draw.circle(win, BLACK, (267,335), 10, 0)
                     pygame.display.update()
                     pygame.time.delay(1000)
                     difficulty_level = "Easy"
@@ -204,7 +213,7 @@ def difficulty():
                     pygame.draw.circle(win, BLACK, (302,195), 10, 0)
                     pygame.draw.circle(win, GREEN, (280,245), 10, 0)
                     pygame.draw.circle(win, BLACK, (300,295), 10, 0)
-                    pygame.draw.circle(win, BLACK, (270,335), 10, 0)
+                    pygame.draw.circle(win, BLACK, (267,335), 10, 0)
                     pygame.display.update()
                     pygame.time.delay(1000)
                     difficulty_level = "Medium"
@@ -215,7 +224,7 @@ def difficulty():
                     pygame.draw.circle(win, BLACK, (302,195), 10, 0)
                     pygame.draw.circle(win, BLACK, (280,245), 10, 0)
                     pygame.draw.circle(win, GREEN, (300,295), 10, 0)
-                    pygame.draw.circle(win, BLACK, (270,335), 10, 0)
+                    pygame.draw.circle(win, BLACK, (267,335), 10, 0)
                     pygame.display.update()
                     pygame.time.delay(1000)
                     difficulty_level = "Hard"
@@ -226,7 +235,7 @@ def difficulty():
                     pygame.draw.circle(win, BLACK, (302,195), 10, 0)
                     pygame.draw.circle(win, BLACK, (280,245), 10, 0)
                     pygame.draw.circle(win, BLACK, (300,295), 10, 0)
-                    pygame.draw.circle(win, GREEN, (270,335), 10, 0)
+                    pygame.draw.circle(win, GREEN, (267,335), 10, 0)
                     pygame.display.update()
                     pygame.time.delay(1000)
                     difficulty_level = "unending"
@@ -235,7 +244,7 @@ def difficulty():
                     play_game()
 
 def difficulty_level_unending():
-    reset()
+    pass
 
 #End game screen that tells the user if they won or lost and gives the correct word
 def end(winner=False):
@@ -250,7 +259,7 @@ def end(winner=False):
     win.fill(GREY)
 
     if winner == True and difficulty_level == "unending":
-        difficulty_level_unending()
+        reset()
     else:
         if winner == True:
             label = lost_font.render(winTxt, 1, BLACK)
@@ -294,6 +303,7 @@ def reset():
     else:
         difficulty_level = ""
         word = ""
+        difficulty()
 
 # Setup buttons
 
@@ -304,6 +314,7 @@ def play_game():
     global limbs
     global hint
     global word
+    global score
 
     increase = round(winWidth / 13)
     for i in range(26):
@@ -348,6 +359,7 @@ def play_game():
                             end()
                     else:
                         print(spacedOut(word, guessed))
+                        score += 5
                         if spacedOut(word, guessed).count('_') == 0:
                             end(True)
 
