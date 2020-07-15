@@ -1,17 +1,17 @@
-<h1>Hangman GUI Application</h1>
+#Hangman GUI Application
 
-<input type="checkbox" checked>Research Hangman on GitHub
-<input type="checkbox" checked>Download and test Hangman from repository
-<input type="checkbox" checked>Review and adjust code based on needs
-<input type="checkbox" checked>Update functions
-<input type="checkbox" checked>Change color schemes
-<input type="checkbox" checked>Update word list
-<input type="checkbox" checked>Add difficulty GUI screen
-<input type="checkbox" checked>Add to word lists based on difficulty
-<input type="checkbox" checked>Add hint GUI frame
-<input type="checkbox" checked>Add hint code
-<input type="checkbox" checked>Add external hint files for each difficulty
-<input type="checkbox">Add Unending game mode
-<input type="checkbox">Add score frame
-<input type="checkbox">Add highscore screen
-<input type="checkbox">Add and code high score from database
+-[X]Research Hangman on GitHub
+-[X]Download and test Hangman from repository
+-[X]Review and adjust code based on needs
+-[X]Update functions
+-[X]Change color schemes
+-[X]Update word list
+-[X]Add difficulty GUI screen
+-[X]Add to word lists based on difficulty
+-[X]Add hint GUI frame
+-[X]Add hint code
+-[X]Add external hint files for each difficulty
+-[ ]Add Unending game mode
+-[ ]Add score frame
+-[ ]Add highscore screen
+-[ ]Add and code high score from database
