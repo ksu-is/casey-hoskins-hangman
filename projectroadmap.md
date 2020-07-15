@@ -22,7 +22,9 @@
 
 -[X]Add external hint files for each difficulty
 
--[ ]Add Unending game mode
+-[X]Add Unending game mode
+
+-[ ]Remove hint button from uending game difficulty
 
 -[ ]Add score frame
 
