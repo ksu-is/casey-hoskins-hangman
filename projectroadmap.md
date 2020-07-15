@@ -24,10 +24,12 @@
 
 -[X]Add Unending game mode
 
--[ ]Remove hint button from uending game difficulty
+-[X]Remove hint button from uending game difficulty
 
--[ ]Add score frame
+-[X]Add score frame
 
 -[ ]Add highscore screen
 
 -[ ]Add and code high score from database
+
+-[ ]BUG -- When game ends using the "unending" difficulty game does not reset.
