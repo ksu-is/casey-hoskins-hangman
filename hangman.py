@@ -2,11 +2,15 @@ import pygame
 import random
 import math
 
+
+#Set the initial game window settings
 pygame.init()
 winHeight = 650
 winWidth = 700
 win=pygame.display.set_mode((winWidth,winHeight))
 
+
+#Set the color variables for easier reference
 BLACK = (0,0,0)
 WHITE = (255,255,255)
 RED = (255,0, 0)
@@ -15,10 +19,14 @@ BLUE = (0,0,255)
 DARK_GREY = (128,128,128)
 GREEN = (0,255,0)
 
+#Set fonts for easier reference
 btn_font = pygame.font.SysFont("comicsansms", 20)
 guess_font = pygame.font.SysFont("monospace", 24)
 lost_font = pygame.font.SysFont('arial', 45)
 difficulty_font = pygame.font.SysFont('comicsansms', 32)
+
+
+#Set initial variables required for gameplay
 word = ''
 buttons = []
 guessed = []
@@ -27,6 +35,8 @@ limbs = 0
 hint = False
 
 
+
+#Sets the initial game board with hangman art and button placement
 def redraw_game_window():
     global guessed
     global hangmanPics
@@ -65,7 +75,7 @@ def redraw_game_window():
 
     pygame.display.update()
 
-
+#Selects a random word based on the difficulty level the user selected
 def randomWord(difficulty_level):
     global word
     global hint_str
@@ -113,7 +123,7 @@ def spacedOut(word, guessed=[]):
             spacedWord += ' '
     return spacedWord
             
-
+#Registers the letter selection
 def buttonHit(x, y):
     for i in range(len(buttons)):
         if x < buttons[i][1] + 20 and x > buttons[i][1] - 20:
@@ -121,7 +131,7 @@ def buttonHit(x, y):
                 return buttons[i][5]
     return None
 
-
+#Gives the user three difficulty options to choose from
 def difficulty():
     win.fill(GREY)
     global difficulty_level
@@ -163,6 +173,7 @@ def difficulty():
                     difficulty_level = "Easy"
                     word = randomWord(difficulty_level)
                     keepPlaying = False
+                    play_game()
                 elif medium_check < 10:
                     pygame.draw.circle(win, BLACK, (302,195), 10, 0)
                     pygame.draw.circle(win, GREEN, (280,245), 10, 0)
@@ -172,6 +183,7 @@ def difficulty():
                     difficulty_level = "Medium"
                     word = randomWord(difficulty_level)
                     keepPlaying = False
+                    play_game()
                 elif hard_check < 10:
                     pygame.draw.circle(win, BLACK, (302,195), 10, 0)
                     pygame.draw.circle(win, BLACK, (280,245), 10, 0)
@@ -181,8 +193,9 @@ def difficulty():
                     difficulty_level = "Hard"
                     word = randomWord(difficulty_level)
                     keepPlaying = False
+                    play_game()
 
-
+#End game screen that tells the user if they won or lost and gives the correct word
 def end(winner=False):
     global limbs
     lostTxt = 'You Lost, press any key to play again...'
@@ -212,75 +225,81 @@ def end(winner=False):
                 again = False
     reset()
 
-
+#After the game is over, resets variables for the next game
 def reset():
     global limbs
     global guessed
     global buttons
     global word
     global hint
+    global difficulty_level
+    global buttons
     for i in range(len(buttons)):
         buttons[i][4] = True
 
     limbs = 0
     guessed = []
     difficulty_level = ""
+    buttons = []
     hint = False
+    word = ""
 
     difficulty()
-
-#MAINLINE
-
 
 # Setup buttons
 
 def quit_game():
     pygame.quit()
 
-difficulty()
+def play_game():
+    global limbs
+    global hint
+    global word
 
-increase = round(winWidth / 13)
-for i in range(26):
-    if i < 13:
-        y = 40
-        x = 25 + (increase * i)
-    else:
-        x = 25 + (increase * (i - 13))
-        y = 85
-    buttons.append([DARK_GREY, x, y, 20, True, 65 + i])
-    # buttons.append([color, x_pos, y_pos, radius, visible, char])
+    increase = round(winWidth / 13)
+    for i in range(26):
+        if i < 13:
+            y = 40
+            x = 25 + (increase * i)
+        else:
+            x = 25 + (increase * (i - 13))
+            y = 85
+        buttons.append([DARK_GREY, x, y, 20, True, 65 + i])
+        # buttons.append([color, x_pos, y_pos, radius, visible, char])
 
-inPlay = True
 
-while inPlay:
-    redraw_game_window()
-    pygame.time.delay(10)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            inPlay = False
-            quit_game()
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
+    #Registers the mouse events and checks after each guess if the word has been guessed or the user is out of guesses.  
+    inPlay = True
+
+    while inPlay:
+        redraw_game_window()
+        pygame.time.delay(10)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 inPlay = False
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            m_x, m_y = pygame.mouse.get_pos()
-            hint_check = math.sqrt((305 - m_x)**2 + (493 - m_y)**2)
-            if hint_check < 10:
-                hint = True
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            clickPos = pygame.mouse.get_pos()
-            letter = buttonHit(clickPos[0], clickPos[1])
-            if letter != None:
-                guessed.append(chr(letter))
-                buttons[letter - 65][4] = False
-                if hang(chr(letter)):
-                    if limbs != 5:
-                        limbs += 1
+                quit_game()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    inPlay = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                m_x, m_y = pygame.mouse.get_pos()
+                hint_check = math.sqrt((305 - m_x)**2 + (493 - m_y)**2)
+                if hint_check < 10:
+                    hint = True
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                clickPos = pygame.mouse.get_pos()
+                letter = buttonHit(clickPos[0], clickPos[1])
+                if letter != None:
+                    guessed.append(chr(letter))
+                    buttons[letter - 65][4] = False
+                    if hang(chr(letter)):
+                        if limbs != 5:
+                            limbs += 1
+                        else:
+                            end()
                     else:
-                        end()
-                else:
-                    print(spacedOut(word, guessed))
-                    if spacedOut(word, guessed).count('_') == 0:
-                        end(True)
+                        print(spacedOut(word, guessed))
+                        if spacedOut(word, guessed).count('_') == 0:
+                            end(True)
 
-# always quit pygame when done!
+difficulty()
