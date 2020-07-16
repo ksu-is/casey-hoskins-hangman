@@ -7,7 +7,9 @@ import math
 pygame.init()
 winHeight = 650
 winWidth = 700
+pygame.display.set_caption("Let 'em Hang")
 win=pygame.display.set_mode((winWidth,winHeight))
+
 
 
 #Set the color variables for easier reference
@@ -251,6 +253,8 @@ def end(winner=False):
     global limbs
     global wordWas
     global unending_word
+    global difficulty_level
+
     lostTxt = 'You Lost, press any key to play again...'
     winTxt = 'WINNER!, press any key to play again...'
     unending_word = word
@@ -260,11 +264,25 @@ def end(winner=False):
 
     if winner == True and difficulty_level == "unending":
         reset()
+    elif winner == False and difficulty_level == "unending":
+        difficulty_level = ""
+        label = lost_font.render(lostTxt, 1, BLACK)
+        wordTxt = lost_font.render(word.upper(), 1, BLACK)
+        wordWas = lost_font.render('The phrase was: ', 1, BLACK)
+        win.blit(wordTxt, (winWidth/2 - wordTxt.get_width()/2, 295))
+        win.blit(wordWas, (winWidth/2 - wordWas.get_width()/2, 245))
+        win.blit(label, (winWidth / 2 - label.get_width() / 2, 140))
+        pygame.display.update()
+        pygame.time.delay(5000)
+        reset()
+
     else:
         if winner == True:
             label = lost_font.render(winTxt, 1, BLACK)
         else:
             label = lost_font.render(lostTxt, 1, BLACK)
+            difficulty_level = ""
+            
 
         wordTxt = lost_font.render(word.upper(), 1, BLACK)
         wordWas = lost_font.render('The phrase was: ', 1, BLACK)
@@ -293,10 +311,13 @@ def reset():
     for i in range(len(buttons)):
         buttons[i][4] = True
 
-    limbs = 0
     guessed = []
     buttons = []
     hint = False
+
+    if difficulty_level != "unending":
+        limbs = 0
+
     if difficulty_level == "unending":
         word = randomWord(difficulty_level)
         play_game()
